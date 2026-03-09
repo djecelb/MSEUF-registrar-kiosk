@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Monitor - MSEUF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 35%;
+            background: #eaecf1;
+            /* Light grey */
+            padding: 2rem;
+            border-right: 1px solid #d0d0d0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            overflow-y: hidden;
+        }
+
+        .main-board {
+            width: 65%;
+            background: #ffffff;
+            /* White background as requested */
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin: 0 0 2rem 0;
+            color: #222;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .on-queue-title {
+            border-bottom: 5px solid #204080;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-content: flex-start;
+        }
+
+        /* Queue Card / Bubbles */
+        .queue-card {
+            background: #e2e2e2;
+            border: 1px solid #b0b0b0;
+            border-radius: 12px;
+            width: 280px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .queue-num {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #5a0000;
+            /* Queue number text: Dark Maroon */
+            text-align: center;
+            padding: 1.5rem 0 1rem 0;
+            background: #ffffff;
+            letter-spacing: -1px;
+        }
+
+        .queue-name {
+            font-size: 1.4rem;
+            color: #5a0000;
+            background: linear-gradient(to right, #d49500, #e8d0a0);
+            text-align: center;
+            padding: 0.8rem 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: capitalize;
+            font-weight: 800;
+        }
+
+        .queue-dest {
+            background: #0a0a0a;
+            color: #f2aa00;
+            font-weight: 800;
+            font-size: 1.5rem;
+            text-align: right;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Footer Ticker */
+        .footer-ticker {
+            background: linear-gradient(to right, #7A0000, #900000, #7A0000);
+            color: white;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .ticker-logo {
+            background: #DF9D02;
+            color: #960000;
+            height: 100%;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            z-index: 10;
+        }
+
+        .ticker-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: scroll 20s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .ticker-time {
+            padding: 0 2rem;
+            font-family: monospace;
+            font-size: 1.4rem;
+            z-index: 10;
+        }
+
+        /* Registrar Monitor Button */
+        .registrar-tag {
+            background: #7A0000;
+            /* Maroon color */
+            color: #ffffff;
+            /* White text */
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-bottom-right-radius: 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar,
+            .main-board {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .sidebar {
+                padding: 1rem;
+                border-right: none;
+                border-bottom: 1px solid #d0d0d0;
+            }
+
+            .main-board {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            .queue-card {
+                width: 200px;
+            }
+
+            .queue-num {
+                font-size: 2.2rem;
+                padding: 1rem 0 0.5rem 0;
+            }
+
+            .queue-name {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+
+            .queue-dest {
+                font-size: 1.1rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .registrar-tag {
+                position: static;
+                text-align: center;
+                margin: 1rem;
+                border-bottom-right-radius: 8px;
+            }
+
+            .footer-ticker {
+                height: 50px;
+                font-size: 1.1rem;
+            }
+
+            .ticker-logo {
+                padding: 0 1rem;
+                font-size: 1rem;
+            }
+
+            .ticker-time {
+                padding: 0 1rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+
+            .sidebar,
+            .main-board {
+                padding: 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .cards-grid {
+                gap: 0.75rem;
+            }
+
+            .queue-card {
+                width: 140px;
+            }
+
+            .queue-num {
+                font-size: 1.6rem;
+            }
+
+            .queue-name {
+                font-size: 0.85rem;
+            }
+
+            .queue-dest {
+                font-size: 0.9rem;
+            }
+
+            .footer-ticker {
+                height: 40px;
+                font-size: 0.9rem;
+            }
+
+            .ticker-logo {
+                padding: 0 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .ticker-time {
+                padding: 0 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-content">
+        <!-- ON QUEUE SECTION (Left Sidebar) -->
+        <div class="sidebar">
+            <h1 class="on-queue-title">On Queue</h1>
+            <div id="queue-container" class="cards-grid">
+                {% for req in waiting %}
+                <div class="queue-card">
+                    <div class="queue-num">{{ req['queue_number'] }}</div>
+                    <div class="queue-name">{{ req['full_name'] }}</div>
+                    <div class="queue-dest">➔ Window 21/22</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- NOW SERVING SECTION (Right Main) -->
+        <div class="main-board">
+            <h1 class="on-queue-title" style="margin-left: 1rem;">Now Serving</h1>
+            <div id="serving-container" class="cards-grid" style="padding-left: 1rem;">
+                {% for req in serving %}
+                <div class="queue-card">
+                    <div class="queue-num">{{ req['queue_number'] }}</div>
+                    <div class="queue-name">{{ req['full_name'] }}</div>
+                    <div class="queue-dest">➔ Window 21/22</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Registrar Monitor Button -->
+    <div class="registrar-tag">Registrar Monitor</div>
+
+    <!-- FOOTER MARQUEE -->
+    <div class="footer-ticker">
+        <div class="ticker-logo">
+            MSEUF
+        </div>
+        <div class="ticker-text">
+            <div class="ticker-content">
+                Welcome to Manuel S. Enverga University Foundation! &nbsp; &nbsp;
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="MSEUF Logo"
+                    style="height: 30px; vertical-align: middle; margin: 0 10px;">
+                &nbsp; &nbsp; Enrollment for Summer SY 25-26 is now open.
+            </div>
+        </div>
+        <div class="ticker-time" id="clock"></div>
+    </div>
+
+    <script>
+        // Update Time
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let mins = now.getMinutes();
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            mins = mins < 10 ? '0' + mins : mins;
+
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const dateStr = monthNames[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear() + " " + hours + ":" + mins + " " + ampm;
+
+            document.getElementById('clock').textContent = dateStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // AJAX Polling setup for seamless updates
+        function fetchUpdates() {
+            // Using standard fetch request
+            fetch(location.href)
+                .then(res => res.text())
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                    const newQueue = doc.getElementById('queue-container');
+                    const newServing = doc.getElementById('serving-container');
+
+                    if (newQueue && newServing) {
+                        document.getElementById('queue-container').innerHTML = newQueue.innerHTML;
+                        document.getElementById('serving-container').innerHTML = newServing.innerHTML;
+                    }
+                });
+        }
+        // Poll every 3 seconds
+        setInterval(fetchUpdates, 3000);
+    </script>
+</body>
+
+</html>

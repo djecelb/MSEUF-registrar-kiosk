@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy app files
+COPY . .
+
+# Cloud Run sets PORT env variable
+ENV PORT=8080
+EXPOSE 8080
+
+# Run with gunicorn for production
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app

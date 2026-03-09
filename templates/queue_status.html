@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="result-card" style="border: 2px solid #F2AE1D; box-shadow: 0 0 0 1px #F2AE1D33;">
+    <h2 style="color:#666;margin-top:0;padding-bottom:0.75rem;border-bottom:2px solid #F2AE1D;">Queue Status</h2>
+    <div class="queue-number-display">{{ req['queue_number'] }}</div>
+    <h3 style="margin-bottom:2rem;font-size:1.5rem;">{{ req['full_name'] }}</h3>
+
+    <div style="margin: 2rem 0; font-size: 1.5rem;">
+        Status:
+        {% if req['status'] == 'Waiting for Payment' %}
+        <span class="status-badge status-waiting" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ req['status']
+            }}</span>
+        <div style="margin-top: 0.75rem; font-size: 1.5rem; color: #800000; font-weight: 600;">(Proceed to Cashier)
+        </div>
+        {% elif req['status'] == 'Paid' %}
+        <span class="status-badge status-paid" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ req['status']
+            }}</span>
+        <span style="font-size: 1.2rem; color: #800000; margin-left: 8px; font-weight: 600;">(Waiting for Window
+            21/22)</span>
+        {% elif req['status'] == 'Now Serving' %}
+        <span class="status-badge status-serving" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ req['status']
+            }}</span>
+        <span style="font-size: 1.2rem; color: #800000; margin-left: 8px; font-weight: 600;">(Window 21/22)</span>
+        {% elif req['status'] == 'Completed' %}
+        <span class="status-badge status-completed" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ req['status']
+            }}</span>
+        <span style="font-size: 1.2rem; color: #800000; margin-left: 8px; font-weight: 600;">(Minimum 3 days for
+            release)</span>
+        {% else %}
+        <span class="status-badge" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ req['status'] }}</span>
+        {% endif %}
+    </div>
+
+    <div style="text-align: left; background: #f9f9f9; padding: 1.5rem; border-radius: 8px;">
+        <p><strong>Requested Documents:</strong> <br>{{ req['documents_requested'] }}</p>
+        <p><strong>Total Amount:</strong> ₱{{ "%.2f"|format(req['total_amount']) }}</p>
+    </div>
+
+    <div style="margin-top: 2rem; text-align: center;">
+        <button onclick="location.reload()" class="btn-secondary">Refresh Status</button>
+    </div>
+</div>
+{% endblock %}

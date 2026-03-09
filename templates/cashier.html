@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1 class="kiosk-title" style="font-size: 2rem; -webkit-text-stroke: 0;">Cashier Interface</h1>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Queue Number</th>
+                <th>Student Name</th>
+                <th>Student Number</th>
+                <th>Documents</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td><strong>{{ req['queue_number'] }}</strong></td>
+                <td>{{ req['full_name'] }}</td>
+                <td>{{ req['student_number'] }}</td>
+                <td>{{ req['documents_requested'] }}</td>
+                <td style="font-weight:bold; color:var(--maroon);">₱{{ "%.2f"|format(req['total_amount']) }}</td>
+                <td>
+                    {% if req['status'] == 'Waiting for Payment' %}
+                    <span class="status-badge status-waiting">{{ req['status'] }}</span>
+                    {% elif req['status'] == 'Paid' %}
+                    <span class="status-badge status-paid">Paid</span>
+                    {% elif req['status'] == 'Now Serving' %}
+                    <span class="status-badge status-serving">{{ req['status'] }}</span>
+                    {% elif req['status'] == 'Completed' %}
+                    <span class="status-badge status-completed">{{ req['status'] }}</span>
+                    {% else %}
+                    <span class="status-badge">{{ req['status'] }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if req['status'] == 'Waiting for Payment' %}
+                    <button class="action-btn" data-queue="{{ req.queue_number }}">Mark as Paid</button>
+                    {% else %}
+                    <span style="color:#aaa; font-style:italic;">Paid</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align:center; padding: 2rem;">No requests found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function fetchUpdates() {
+        fetch(location.href)
+            .then(res => res.text())
+            .then(html => {
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const newTbody = doc.querySelector('table.data-table tbody');
+                if (newTbody) {
+                    document.querySelector('table.data-table tbody').innerHTML = newTbody.innerHTML;
+                }
+            });
+    }
+    // Poll every 3 seconds for updates without refreshing page
+    setInterval(fetchUpdates, 3000);
+
+    // Delegated click handler for "Mark as Paid" buttons
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('button[data-queue]');
+        if (btn) {
+            markPaid(btn.dataset.queue);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="kiosk-header">
+    <h1 class="kiosk-title">Registrar Kiosk - Request Form</h1>
+</div>
+
+<div class="form-container">
+    <form id="request-form" action="{{ url_for('request_form') }}" method="POST">
+        <h3 style="margin-top:0;">Student Information</h3>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="full_name" required>
+        </div>
+        <div class="form-group">
+            <label>Student Number</label>
+            <input type="text" name="student_number" required>
+        </div>
+        <div class="form-group">
+            <label>Department</label>
+            <select name="department" id="department" required>
+                <option value="">-- Select Department --</option>
+                <option value="ETEEAP">ETEEAP</option>
+                <option value="CNAHS">CNAHS</option>
+                <option value="CAFA">CAFA</option>
+                <option value="CAS">CAS</option>
+                <option value="CIHTM">CIHTM</option>
+                <option value="CCMS">CCMS</option>
+                <option value="CME">CME</option>
+                <option value="CENG">CENG</option>
+                <option value="CCJC">CCJC</option>
+                <option value="CED">CED</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Program</label>
+            <select name="program" id="program" required>
+                <option value="">-- Select Program --</option>
+            </select>
+        </div>
+
+        <hr style="margin: 2rem 0; border:1px solid #eee;">
+        <h3>Document Request</h3>
+        <p style="color:#666; font-size: 0.9rem;">Please enter the quantity of documents needed.</p>
+        <div class="doc-list">
+            <div class="doc-item">
+                <label>Copy of Grades</label>
+                <input type="number" name="qty_Copy_of_Grades" id="qty_Copy_of_Grades" class="qty-input" min="0"
+                    value="0">
+            </div>
+            <div class="doc-item">
+                <label>Transcript of Records (₱90)</label>
+                <input type="number" name="qty_Transcript_of_Records" id="qty_Transcript_of_Records" class="qty-input"
+                    min="0" value="0">
+            </div>
+            <div class="doc-item">
+                <label>Honorable Dismissal</label>
+                <input type="number" name="qty_Honorable_Dismissal" id="qty_Honorable_Dismissal" class="qty-input"
+                    min="0" value="0">
+            </div>
+            <div class="doc-item">
+                <label>Certification (₱130)</label>
+                <input type="number" name="qty_Certification" id="qty_Certification" class="qty-input" min="0"
+                    value="0">
+            </div>
+            <div class="doc-item">
+                <label>Scholarship (Off-Campus)</label>
+                <input type="number" name="qty_Scholarship_(Off-Campus)" id="qty_Scholarship_(Off-Campus)"
+                    class="qty-input" min="0" value="0">
+            </div>
+            <div class="doc-item">
+                <label>Request for F137A / SF10</label>
+                <input type="number" name="qty_Request_for_F137A_/_SF10" id="qty_Request_for_F137A_/_SF10"
+                    class="qty-input" min="0" value="0">
+            </div>
+            <div class="doc-item">
+                <label>Add Documentary Stamp (₱50 each)</label>
+                <input type="number" name="stamp_qty" id="stamp_qty" class="qty-input" min="0" value="0">
+            </div>
+        </div>
+
+        <div class="checkout-section">
+            <div>
+                <span style="font-size:1.2rem;font-weight:600;">Total Amount: </span>
+                <span class="total-price" id="total-amount">₱0.00</span>
+            </div>
+            <div>
+                <a href="{{ url_for('kiosk') }}" class="btn-secondary">Cancel</a>
+                <button type="button" class="btn-submit" id="btn-show-confirm">Submit Request</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-modal">
+        <h2 style="margin-top:0; color:var(--maroon);">Confirm Your Request</h2>
+        <p style="color:#555;">Please review the details below before submitting.</p>
+
+        <div class="confirm-info">
+            <div class="confirm-row">
+                <span class="confirm-label">Name:</span>
+                <span id="confirm-name"></span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Student Number:</span>
+                <span id="confirm-student-no"></span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Department:</span>
+                <span id="confirm-dept"></span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Program:</span>
+                <span id="confirm-program"></span>
+            </div>
+        </div>
+
+        <h4 style="margin-bottom:0.5rem; color:var(--maroon);">Requested Documents</h4>
+        <ul id="confirm-docs-list" class="confirm-docs-list"></ul>
+
+        <div class="confirm-total">
+            Total Amount: <span id="confirm-total-amount"></span>
+        </div>
+
+        <div class="confirm-actions">
+            <button type="button" class="btn-secondary" id="btn-go-back">Go Back & Edit</button>
+            <button type="button" class="btn-submit" id="btn-confirm-submit">Confirm & Submit</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

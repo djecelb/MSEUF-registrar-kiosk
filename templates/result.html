@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        var interval = setInterval(function () {
+            var timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+            }));
+            confetti(Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+            }));
+        }, 250);
+    });
+</script>
+<div class="result-card">
+    <div class="qr-code">
+        <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code" style="width: 300px; height: 300px;">
+    </div>
+    <h2 style="color:#666;margin-top:0;">Your Queue Number is</h2>
+    <div class="queue-number-display">{{ req['queue_number'] }}</div>
+    <h3 style="margin-bottom:0.5rem;font-size:1.5rem;">{{ req['full_name'] }}</h3>
+    <p style="color:#960000; font-weight:700; font-size:1.5rem; margin-top:0;">Proceed to the Cashier for payment.</p>
+
+    <div class="next-steps">
+        <h4>Next Steps</h4>
+        <ol>
+            <li>Take note of your <strong>queue number</strong> and <strong>take a photo or screenshot of the QR
+                    code</strong>.</li>
+            <li>Proceed to the <strong>Cashier</strong> for payment.</li>
+            <li>Present your <strong>queue number or QR code</strong> and pay the required amount.</li>
+            <li>After payment, proceed to <strong>Window 21/22 – Registrar Records Section</strong>.</li>
+            <li>You may check the <strong>Queue Monitor Screen (TV above)</strong> to see when your number is being
+                served.</li>
+        </ol>
+    </div>
+
+    <a href="{{ url_for('kiosk') }}" class="btn-submit" style="display:inline-block;text-decoration:none;">Finish /
+        Return to Home</a>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1 class="kiosk-title" style="font-size: 2rem; -webkit-text-stroke: 0;">Window 21/22 - Registrar Records
+            Section</h1>
+    </div>
+
+    <div class="boards">
+        <!-- NOW SERVING -->
+        <div class="board">
+            <h2 style="color:var(--gold); margin-top:0;">Now Serving</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Queue Number</th>
+                        <th>Student Name</th>
+                        <th>Student Number</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in serving %}
+                    <tr style="background-color: #fdf5e6;">
+                        <td style="font-size: 1.5rem; font-weight:bold; color:var(--maroon);">{{ req['queue_number'] }}
+                        </td>
+                        <td style="font-size: 1.2rem; font-weight:600;">{{ req['full_name'] }}</td>
+                        <td>{{ req['student_number'] }}</td>
+                        <td>
+                            <button class="action-btn complete-btn"
+                                style="background:#4caf50; color:white; font-size:1.1rem; padding:0.75rem 1.5rem;"
+                                data-queue="{{ req['queue_number'] }}">Complete</button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding: 3rem; color:#666; font-style:italic;">No one
+                            is being served right now.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- WAITING QUEUE -->
+        <div class="board">
+            <h2 style="color:var(--white); margin-top:0;">Waiting Queue (Paid)</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Queue Number</th>
+                        <th>Student Name</th>
+                        <th>Student Number</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in waiting %}
+                    <tr>
+                        <td style="font-size: 1.2rem; font-weight:bold;">{{ req['queue_number'] }}</td>
+                        <td style="font-weight:600;">{{ req['full_name'] }}</td>
+                        <td>{{ req['student_number'] }}</td>
+                        <td>
+                            <button class="action-btn serve-btn" data-queue="{{ req['queue_number'] }}">Next
+                                Queue</button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding: 3rem; color:#666; font-style:italic;">Queue
+                            is currently empty.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function fetchUpdates() {
+        fetch(location.href)
+            .then(res => res.text())
+            .then(html => {
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const boards = doc.querySelectorAll('.board table.data-table tbody');
+                const currentBoards = document.querySelectorAll('.board table.data-table tbody');
+
+                if (boards.length >= 2 && currentBoards.length >= 2) {
+                    currentBoards[0].innerHTML = boards[0].innerHTML; // Now Serving
+                    currentBoards[1].innerHTML = boards[1].innerHTML; // Waiting Queue
+                }
+            });
+    }
+    // Fast polling every 2 seconds for real-time board updates
+    setInterval(fetchUpdates, 2000);
+
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.complete-btn');
+        if (btn) {
+            completeQueue(btn.getAttribute('data-queue'));
+            return;
+        }
+        btn = e.target.closest('.serve-btn');
+        if (btn) {
+            serveQueue(btn.getAttribute('data-queue'));
+        }
+    });
+</script>
+{% endblock %}
